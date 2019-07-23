@@ -16,6 +16,16 @@ socket.on('newMessage', function (data) {
     jQuery('#messages').append(li);
 })
 
+socket.on('newLocationMessage' , function(data) {
+    var li = jQuery('<li></li>');
+    var a = jQuery('<a target="_blank">My current location</a>');
+
+    li.text(`${data.from}: `);
+    a.attr('href', data.text);
+    li.append(a);
+    jQuery('#messages').append(li);
+})
+
 // socket.emit('createMessage', {
 //     from: 'amar',
 //     text: 'hellow this is create'
@@ -33,3 +43,21 @@ jQuery('#message-form').on('submit', function(e) {
 
     })
 });
+
+
+var locationButton = jQuery('#send-location');
+
+locationButton.on('click', function(){
+    if(!navigator.geolocation){
+        alert('unable to fetch location')
+    }
+
+    navigator.geolocation.getCurrentPosition(function(position) {
+        socket.emit('locationUser', {
+            lat : position.coords.latitude,
+            lon : position.coords.longitude
+        })
+    }, function(){
+        alert('unable to fetch location')
+    });
+})
